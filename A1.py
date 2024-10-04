@@ -227,18 +227,18 @@ class Parser:
         self.pos = 0
 
     def current_token(self):
-        """Return the current token."""
+        """Return the current token"""
         if self.pos < len(self.tokens):
             return self.tokens[self.pos]
         return None
 
     def advance(self):
-        """Move to the next token."""
+        """Move to the next token"""
         if self.pos < len(self.tokens):
             self.pos += 1
 
     def expect(self, expected_value):
-        """Ensure the current token matches the expected value and advance."""
+        """Ensure the current token matches the expected value and go to the next token"""
         token = self.current_token()
         if token is None or token != expected_value:
             raise SyntaxError(f"Expected {expected_value}, found {token}")
@@ -246,7 +246,7 @@ class Parser:
 
     def parse_expr(self):
         """
-        Parses an expression, which can be a sequence of terms representing function application.
+        Parses an expression, which can be a sequence of terms representing function application
         Returns a Node object representing the parsed expression.
         """
         left = self.parse_term()
@@ -258,7 +258,7 @@ class Parser:
             # Parse the next term
             right = self.parse_term()
             # Create an application node
-            app_node = Node('app')
+            app_node = Node('application function')
             app_node.add_child_node(left)
             app_node.add_child_node(right)
             left = app_node  # The new left is the application node
@@ -328,14 +328,14 @@ def reconstruct_expr(node: Node) -> str:
         # Children: ['\\', var_node, expr_node]
         var_expr = reconstruct_expr(node.children[1])
         expr_expr = reconstruct_expr(node.children[2])
-        return '\\_' + var_expr + '_(' + expr_expr + ')'
+        return '\\_' + var_expr + '_' + expr_expr
     elif node.elem == 'parens':
         # Children: ['(', expr_node, ')']
         expr_expr = reconstruct_expr(node.children[1])
-        return '(' + expr_expr + ')'
+        return '(_' + expr_expr + '_)'
     else:
         # For nodes like '\\', '(', ')', variables
-        return ''.join([reconstruct_expr(child) for child in node.children]) if node.children else node.elem
+        return '_'.join([reconstruct_expr(child) for child in node.children]) if node.children else node.elem
 
     
 
