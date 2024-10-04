@@ -58,26 +58,6 @@ class Node:
         self.children.append(node)
 
 
-class ParseTree:
-    """
-    A full parse tree, with nodes
-    Attributes:
-        root: the root of the tree
-    """
-    def __init__(self, root):
-        self.root = root
-
-    def print_tree(self, node: Optional[Node] = None, level: int = 0) -> None:
-        if node is None:
-            node = self.root
-
-        indent = "----" * level
-        print(f"{indent}{''.join(node.elem)}")
-
-        for child in node.children:
-            self.print_tree(child, level + 1)
-
-
 
 def parse_tokens(s_: str) -> Union[List[str], bool]:
     """
@@ -241,48 +221,6 @@ def read_lines_from_txt_output_parse_tree(fp: [str, os.PathLike]) -> None:
 
 
 
-def build_parse_tree_rec(tokens: List[str], node: Optional[Node] = None) -> Node:
-    """
-    An inner recursive inner function to build a parse tree
-    :param tokens: A list of token strings
-    :param node: A Node object
-    :return: a node with children whose tokens are variables, parenthesis, slashes, or the inner part of an expression
-    """
-
-    if node is None:
-        node = Node()
-
-    while tokens:
-        token = tokens.pop(0)
-
-        if token == '(':
-            # Begin a new subexpression
-            child_node = build_parse_tree_rec(tokens)
-            node.add_child_node(child_node)
-
-        elif token == ')':
-            # End the current subexpression
-            return node
-
-        else:
-            # Handle variables and other elements
-            new_node = Node(token)
-            node.add_child_node(new_node)
-
-    return node
-
-
-def build_parse_tree(tokens: List[str]) -> ParseTree:
-    """
-    Build a parse tree from a list of tokens
-    :param tokens: List of tokens
-    :return: parse tree
-    """
-    pt = ParseTree(build_parse_tree_rec(tokens))
-    return pt
-
-
-
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -405,6 +343,8 @@ def reconstruct_expr(node: Node) -> str:
 def print_tree(node: Node, level: int = 0) -> None:
     """
     Recursively prints the parse tree with indentation to reflect structure.
+    :param node: A Node object
+    :param level: the current tree level 
     """
     indent = "----" * level
     expr = reconstruct_expr(node)
