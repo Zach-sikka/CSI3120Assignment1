@@ -119,7 +119,7 @@ def parse_tokens(s_: str) -> Union[List[str], bool]:
 
             
         elif char == '\\':
-
+            index_backslash = s.index(char)
             if i + 1 < len(s) and s[i + 1].isspace():
                 print(f"Error: Invalid space inserted after '\\' at index {i}")
                 return False
@@ -142,7 +142,7 @@ def parse_tokens(s_: str) -> Union[List[str], bool]:
 
             # After lambda abstraction, check if there is an expression following
             if i >= len(s) or (s[i] not in all_valid_chars and not s[i].isspace()):
-                print(f"Error: Missing expression after lambda abstraction at index {i}")
+                print(f"Error: Missing expression after lambda abstraction at index {index_backslash}")
                 return False
             
         # Parse dot (.)
@@ -253,7 +253,7 @@ class Parser:
 
         while True:
             token = self.current_token()
-            if token is None or token in [')', '.']:
+            if token is None or token in [')']:
                 break  # Stop parsing if end of expression is reached
             # Parse the next term
             right = self.parse_term()
@@ -305,8 +305,7 @@ class Parser:
         self.expect('\\')
         backslash_node = Node('\\')  # Node for '\'
         var_node = self.parse_var()
-        if self.current_token() == '.':
-            self.advance()
+        
         expr_node = self.parse_expr()
         lambda_node = Node('lambda')
         lambda_node.add_child_node(backslash_node)
