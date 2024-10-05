@@ -7,7 +7,7 @@ var_chars = alphabet_chars + numeric_chars
 all_valid_chars = var_chars + ["(", ")", ".", "\\"]
 valid_examples_fp = "./valid_examples.txt"
 invalid_examples_fp = "./invalid_examples.txt"
-
+extra_invalid_examples_fp = "./extra_invalid_examples.txt"
 
 def read_lines_from_txt(fp: [str, os.PathLike]) -> List[str]:
     """
@@ -16,9 +16,9 @@ def read_lines_from_txt(fp: [str, os.PathLike]) -> List[str]:
     and newline characters.
     """
     lines = []
-    with open(fp, 'r') as file:
+    with open(fp, 'r') as file: #we open the file and set our cursor to read mode
         for line in file.readlines():
-            lines.append(line.strip())
+            lines.append(line.strip()) #we append a list of strings that will need to be evaluated
 
     return lines
 
@@ -29,15 +29,15 @@ def is_valid_var_name(s: str) -> bool:
     :return: True if the variable name starts with a character,
     and contains only characters and digits. Returns False otherwise.
     """
-    if not s:
+    if not s: #if empty, then false
         return False
     
     if s[0] not in alphabet_chars:
-        return False
+        return False #if the beginning does not start with an alphabetical number, then return false
     
     for c in s:
         if c not in all_valid_chars:
-            return False
+            return False #if the characters in string s are not part of the valid characters, return false
 
     return True
 
@@ -78,22 +78,22 @@ def parse_tokens(s_: str) -> Union[List[str], bool]:
 
     while i < len(s):
         char = s[i]
-        if char.isspace():
+        if char.isspace(): #we ignore whitespace
             i += 1
             continue
         
         if char not in all_valid_chars:
             print(f"Error: Invalid character '{char}' at index {i}")
-            return False
+            return False #if the character is not in the set of valid characters, return False
         
-        if char.isalpha():
+        if char.isalpha(): #if we find an alphabetic character, then it must be a variable
             var_name = char
             i+= 1
-            while i <len(s) and s[i] in var_chars:
+            while i <len(s) and s[i] in var_chars: #loop through variable to find the entire variable
                 var_name += s[i]
                 i += 1
 
-            if is_valid_var_name(var_name):
+            if is_valid_var_name(var_name): #check if the variable is valid
                 tokens.append(var_name)
             else:
                 print(f"Error: Invalid variable name '{var_name}' at index {i}")
@@ -102,15 +102,15 @@ def parse_tokens(s_: str) -> Union[List[str], bool]:
 
         elif char == '(':
             tokens.append(char)
-            open_parens += 1
+            open_parens += 1 #track number of open parantheses
             i += 1
 
-            if i < len(s) and s[i] == ')': #Empty paratheses checker
+            if i < len(s) and s[i] == ')': #Check for empty parantheses
                 print(f"Error: Missing expression inside parentheses at index {i}")
-                return False
+                return False 
             
         elif char == ')':
-            if open_parens == 0:
+            if open_parens == 0: #If open_parens == 0, then there are no more open parentheses to match the closing one
                 print(f"Bracket ')' at index {i} is not matched with an opening bracket '('.")
                 return False
             tokens.append(char)
@@ -120,10 +120,10 @@ def parse_tokens(s_: str) -> Union[List[str], bool]:
             
         elif char == '\\':
             index_backslash = s.index(char)
-            if i + 1 < len(s) and s[i + 1].isspace():
+            if i + 1 < len(s) and s[i + 1].isspace(): #if there is a space after a backslash, then it is wrong
                 print(f"Error: Invalid space inserted after '\\' at index {i}")
                 return False
-            if i + 1 == len(s) or not s[i + 1].isalpha():
+            if i + 1 == len(s) or not s[i + 1].isalpha(): #If the variable after the backslash does not start with an alphabetic number, then its invalid
                 print(f"Error: Backslash '\\' not followed by a valid variable name at index {i}")
                 return False
             
@@ -133,7 +133,7 @@ def parse_tokens(s_: str) -> Union[List[str], bool]:
                 var_name += s[i]
                 i += 1
 
-            if is_valid_var_name(var_name):
+            if is_valid_var_name(var_name): #append both the variable and backslash if variable name is valid
                 tokens.append('\\')
                 tokens.append(var_name)
             else:
@@ -363,6 +363,8 @@ if __name__ == "__main__":
 
     print("Checking invalid examples...")
     read_lines_from_txt_check_validity(invalid_examples_fp)
+    print("Checking extra invalid examples...")
+    read_lines_from_txt_check_validity(extra_invalid_examples_fp)
 
 
 
