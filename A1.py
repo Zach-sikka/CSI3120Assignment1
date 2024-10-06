@@ -8,6 +8,7 @@ all_valid_chars = var_chars + ["(", ")", ".", "\\"]
 valid_examples_fp = "./valid_examples.txt"
 invalid_examples_fp = "./invalid_examples.txt"
 extra_invalid_examples_fp = "./extra_invalid_examples.txt"
+extra_valid_examples_fp = "./extra_valid_examples.txt"
 
 def read_lines_from_txt(fp: [str, os.PathLike]) -> List[str]:
     """
@@ -266,6 +267,10 @@ class Parser:
         return left
 
     def parse_term(self):
+        """
+        Parses a specific term, which can be a variable, labmda expression, or parentheses
+        Retunrs a call to the correct non terminal function to parse
+        """
         token = self.current_token()
         if token is None:
             raise SyntaxError("Unexpected end of input")
@@ -279,6 +284,11 @@ class Parser:
             raise SyntaxError(f"Unexpected token: {token}")
 
     def parse_var(self) -> Node:
+        """
+        Parses a variable
+        Returns a Node object representing the variable term
+        """
+
         token = self.current_token()
         if token and token.isalpha():
             var_node = Node(token)  # Create a node for the variable
@@ -288,6 +298,10 @@ class Parser:
             raise SyntaxError(f"Expected variable, found {token}")
 
     def parse_paren_expr(self) -> Node:
+        """
+        Parses an expression term
+        Returns a Node object representing the expressions parent node
+        """
         self.expect('(')
         left_paren_node = Node('(')  # Node for '('
         expr = self.parse_expr()
@@ -302,6 +316,10 @@ class Parser:
 
 
     def parse_lambda_expr(self) -> Node:
+        """
+        Parses a lambda term
+        Returns a Node object representing the whole lambda expression
+        """
         self.expect('\\')
         backslash_node = Node('\\')  # Node for '\'
         var_node = self.parse_var()
@@ -320,6 +338,10 @@ class Parser:
 
 
 def reconstruct_expr(node: Node) -> str:
+    """
+        Recursively builds the parse tree starting at the root and going down
+        Returns string representation of the parse tree
+        """
     if not node.children:
         return node.elem
     elif node.elem == 'app':
@@ -359,6 +381,11 @@ if __name__ == "__main__":
 
     print("\n\nChecking valid examples...")
     read_lines_from_txt_check_validity(valid_examples_fp)
+    print("Checking extra valid examples...")
+    read_lines_from_txt_check_validity(extra_valid_examples_fp)
+
+    read_lines_from_txt_output_parse_tree(extra_valid_examples_fp)
+
     read_lines_from_txt_output_parse_tree(valid_examples_fp)
 
     print("Checking invalid examples...")

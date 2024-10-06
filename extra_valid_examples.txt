@@ -1,0 +1,6 @@
+(\x. x (y z)) (\a. a b)
+\x. ((a b) (x y z))
+(\x. \y. x (y z)) (\a. a b c)
+\x. ((x (y z)) (a (b c)))
+(a (\b. b c)) (d e)
+
