@@ -1,4 +1,4 @@
-CSI3120 Assignemnt #1
+CSI3120 Assignment #1
 Zachary Sikka - 300305350
 John-Adrian - 300262408
 
